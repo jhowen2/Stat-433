@@ -2,6 +2,7 @@
 title: "Stat 433 HW Week3"
 author: "Jack Owen"
 output: html_document
+date: "Github repo: https://github.com/jhowen2/Stat-433"
 ---
 
 ```{r setup, include=FALSE}
