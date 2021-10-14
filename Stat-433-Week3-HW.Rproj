@@ -1,0 +1,57 @@
+---
+title: "Stat 433 HW Week3"
+author: "Jack Owen"
+output: html_document
+date: "Github repo: https://github.com/jhowen2/Stat-433"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(nycflights13)
+library(ggplot2)
+library(dplyr)
+```
+
+**1. How many flights have a missing dep_time? What other variables are missing? What might these rows represent?**
+
+***We observe that there were 8255 missing departing times and delays, 8713 missing arrival times, and 9430 missing arrival times and delays. This must mean that there were either cancelled, delayed or errors in reporting when it comes to recording data regarding flights in 2013.***
+
+```{r}
+sum(is.na(flights$dep_time))
+sum(is.na(flights$dep_delay))
+sum(is.na(flights$arr_time))
+sum(is.na(flights$arr_delay))
+sum(is.na(flights$air_time))
+
+filter(flights, is.na(dep_time))
+```
+
+
+**2. Currently dep_time and sched_dep_time are convenient to look at, but hard to compute with because they’re not really continuous numbers. Convert them to a more convenient representation of number of minutes since midnight.**
+
+***Mutate the variables by dividing by 100 with %/% to isolate the hours then multiply by 60 to convert the hours to minutes, then add the mod remainder of the each time by 100 to get just the minutes.***
+
+```{r}
+mutate(flights,
+       dep_time = (dep_time %/% 100) * 60 + (dep_time %% 100),
+       sched_dep_time = (sched_dep_time %/% 100) * 60 + (sched_dep_time %% 100))
+```
+
+
+**3. Look at the number of canceled flights per day. Is there a pattern? Is the proportion of canceled flights related to the average delay? Use multiple dyplr operations, all on one line, concluding with ggplot(aes(x= ,y=)) + geom_point()**
+
+***As the length of the delay time increases, we see the proportion of flight cancellations increase as well.***
+
+```{r}
+flights %>% 
+  
+  group_by(month, day) %>%
+  
+  summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE),
+            cancelled = sum(is.na(dep_time) / n())) %>%
+  
+  ggplot(aes(x = avg_dep_delay, y = cancelled)) + geom_point()
+```
